@@ -51,8 +51,15 @@ namespace GoalTrackerPointGiver
 			DISABLEREACTIONS = false;
 			TrackerDrop.SelectedIndex = calendarindex;
 
-			this.Left = (int)REG.GetReg("GoalTrackerPointGiver", "startx");
-			this.Top = (int)REG.GetReg("GoalTrackerPointGiver", "starty");
+			try
+			{
+				this.Left = (int)REG.GetReg("GoalTrackerPointGiver", "startx");
+				this.Top = (int)REG.GetReg("GoalTrackerPointGiver", "starty");
+			}
+			catch
+			{
+
+			}
 		}
 
 		private void CalendarContextMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
@@ -260,7 +267,7 @@ namespace GoalTrackerPointGiver
 
 			CALENDAR.RemoveExtraHeaderKey(TrackerDrop.SelectedItem.ToString() + "S");
 			CALENDAR.RemoveExtraHeaderKey(TrackerDrop.SelectedItem.ToString() + "E");
-			CALENDAR.Write(Path.Combine(CALENDARSPATH, YearUpD.Value.ToString()), true);			
+			CALENDAR.Write(Path.Combine(CALENDARSPATH, YearUpD.Value.ToString()), true);
 		}
 
 		private void CalendarContextGoalBtn_DropDownOpening(object sender, EventArgs e)
@@ -326,22 +333,53 @@ namespace GoalTrackerPointGiver
 						YearUpD.Value = DateTime.Now.Year;
 						return;
 					}
-					else if (res == DialogResult.No)
+					else
 					{
-						TrackerDrop.Items.Clear();
-						TrackerDrop.Items.Add("default");
+						int selectedindex;
 						CALENDAR = new FITSBinTable("CALENDAR");
-						TrackerDrop.SelectedIndex = 0;
-					}
-					else//Yes
-					{
-						string[] tracks = CALENDAR.TableDataLabelTTYPEs;
 
+						if (res == DialogResult.No)
+						{
+							TrackerDrop.Items.Clear();
+							TrackerDrop.Items.Add("default");
+
+							bool[] marked = new bool[365];
+							if (DateTime.IsLeapYear((int)YearUpD.Value))
+								marked = new bool[366];
+
+							CALENDAR.AddTTYPEEntry(TrackerDrop.Items[0].ToString(), true, "", marked);
+							selectedindex = 0;
+						}
+						else
+						{
+							for (int i = 0; i < TrackerDrop.Items.Count; i++)
+							{
+								bool[] marked = new bool[365];
+								if (DateTime.IsLeapYear((int)YearUpD.Value))
+									marked = new bool[366];
+
+								CALENDAR.AddTTYPEEntry(TrackerDrop.Items[i].ToString(), true, "", marked);
+							}
+
+							selectedindex = TrackerDrop.SelectedIndex;
+						}
+
+						CALENDAR.Write(Path.Combine(CALENDARSPATH, YearUpD.Value.ToString()), true);
+						TrackerDrop.SelectedIndex = selectedindex;
+						return;
 					}
 				}
-			
+
+			//else
 			//year calendar exists
+			CALENDAR = new FITSBinTable(Path.Combine(CALENDARSPATH, YearUpD.Value.ToString()), "CALENDAR");
+			TrackerDrop.Items.Clear();
+			string[] tracks = CALENDAR.TableDataLabelTTYPEs;
+			for (int i = 0; i < tracks.Length; i++)
+				if (CALENDAR.GetTTYPETypeCode(tracks[i]) == TypeCode.Boolean)
+					TrackerDrop.Items.Add(tracks[i]);
 			
+			TrackerDrop.SelectedIndex = 0;
 		}
 
 		private void RenameCalendarTextBox_KeyDown(object sender, KeyEventArgs e)
