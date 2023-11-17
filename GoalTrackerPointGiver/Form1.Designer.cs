@@ -33,21 +33,12 @@ namespace GoalTrackerPointGiver
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GoalTrackerPointGiver));
+			System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+			System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+			System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+			System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
 			this.YearCalendar = new System.Windows.Forms.MonthCalendar();
-			this.CalendarContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.CalendarContextDatesBtn = new System.Windows.Forms.ToolStripMenuItem();
-			this.CalendarContextMarkDatesBtn = new System.Windows.Forms.ToolStripMenuItem();
-			this.CalendarContextClearDatesBtn = new System.Windows.Forms.ToolStripMenuItem();
-			this.CalendarContextGoalBtn = new System.Windows.Forms.ToolStripMenuItem();
-			this.CalendarContextGoalSetBtn = new System.Windows.Forms.ToolStripMenuItem();
-			this.CalendarContextGoalSeeBtn = new System.Windows.Forms.ToolStripMenuItem();
-			this.CalendarContextGoalClearBtn = new System.Windows.Forms.ToolStripMenuItem();
-			this.CalendarContextNotesBtn = new System.Windows.Forms.ToolStripMenuItem();
-			this.calendarContextNotesTxt = new System.Windows.Forms.ToolStripTextBox();
-			this.CalendarContextMoodBtn = new System.Windows.Forms.ToolStripMenuItem();
-			this.CalendarContextMoodDrop = new System.Windows.Forms.ToolStripComboBox();
-			this.CalendarContextDesireBtn = new System.Windows.Forms.ToolStripMenuItem();
-			this.CalendarContextDesireDrop = new System.Windows.Forms.ToolStripComboBox();
 			this.mainMenuStrip = new System.Windows.Forms.MenuStrip();
 			this.userMainMenuTab = new System.Windows.Forms.ToolStripMenuItem();
 			this.label1 = new System.Windows.Forms.Label();
@@ -63,16 +54,37 @@ namespace GoalTrackerPointGiver
 			this.YearUpD = new System.Windows.Forms.NumericUpDown();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this.EscBtn = new System.Windows.Forms.Button();
-			this.CalendarContextMenu.SuspendLayout();
+			this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
+			this.MarkBtn = new System.Windows.Forms.Button();
+			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.GoalSeeChck = new System.Windows.Forms.CheckBox();
+			this.GoalClearBtn = new System.Windows.Forms.Button();
+			this.GoalSetBtn = new System.Windows.Forms.Button();
+			this.DaysLabel = new System.Windows.Forms.Label();
+			this.dateItem1 = new Pabo.Calendar.DateItem();
+			this.MoodChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
+			this.MoodContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.MoodContextDrop = new System.Windows.Forms.ToolStripComboBox();
+			this.DesireChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
+			this.DesireContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.DesireContextDrop = new System.Windows.Forms.ToolStripComboBox();
+			this.NotesTxtBox = new System.Windows.Forms.TextBox();
+			this.label2 = new System.Windows.Forms.Label();
+			this.label4 = new System.Windows.Forms.Label();
+			this.label5 = new System.Windows.Forms.Label();
 			this.mainMenuStrip.SuspendLayout();
 			this.calendarDropContextMenu.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.YearUpD)).BeginInit();
+			this.groupBox1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.MoodChart)).BeginInit();
+			this.MoodContextMenu.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.DesireChart)).BeginInit();
+			this.DesireContextMenu.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// YearCalendar
 			// 
 			this.YearCalendar.CalendarDimensions = new System.Drawing.Size(4, 3);
-			this.YearCalendar.ContextMenuStrip = this.CalendarContextMenu;
 			this.YearCalendar.Location = new System.Drawing.Point(16, 29);
 			this.YearCalendar.Margin = new System.Windows.Forms.Padding(8);
 			this.YearCalendar.MaxDate = new System.DateTime(2023, 12, 31, 0, 0, 0, 0);
@@ -80,140 +92,8 @@ namespace GoalTrackerPointGiver
 			this.YearCalendar.MinDate = new System.DateTime(2023, 1, 1, 0, 0, 0, 0);
 			this.YearCalendar.Name = "YearCalendar";
 			this.YearCalendar.TabIndex = 0;
-			// 
-			// CalendarContextMenu
-			// 
-			this.CalendarContextMenu.ImageScalingSize = new System.Drawing.Size(24, 24);
-			this.CalendarContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.CalendarContextDatesBtn});
-			this.CalendarContextMenu.Name = "CalendarContextMenu";
-			this.CalendarContextMenu.Size = new System.Drawing.Size(181, 48);
-			this.CalendarContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.CalendarContextMenu_Opening);
-			// 
-			// CalendarContextDatesBtn
-			// 
-			this.CalendarContextDatesBtn.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.CalendarContextMarkDatesBtn,
-            this.CalendarContextClearDatesBtn,
-            this.CalendarContextGoalBtn,
-            this.CalendarContextNotesBtn,
-            this.CalendarContextMoodBtn,
-            this.CalendarContextDesireBtn});
-			this.CalendarContextDatesBtn.Name = "CalendarContextDatesBtn";
-			this.CalendarContextDatesBtn.Size = new System.Drawing.Size(180, 22);
-			this.CalendarContextDatesBtn.Text = "Dates";
-			// 
-			// CalendarContextMarkDatesBtn
-			// 
-			this.CalendarContextMarkDatesBtn.Name = "CalendarContextMarkDatesBtn";
-			this.CalendarContextMarkDatesBtn.Size = new System.Drawing.Size(180, 22);
-			this.CalendarContextMarkDatesBtn.Text = "Mark";
-			this.CalendarContextMarkDatesBtn.Click += new System.EventHandler(this.CalendarContextMarkDatesBtn_Click);
-			// 
-			// CalendarContextClearDatesBtn
-			// 
-			this.CalendarContextClearDatesBtn.Name = "CalendarContextClearDatesBtn";
-			this.CalendarContextClearDatesBtn.Size = new System.Drawing.Size(180, 22);
-			this.CalendarContextClearDatesBtn.Text = "Clear";
-			this.CalendarContextClearDatesBtn.Click += new System.EventHandler(this.CalendarContextClearDatesBtn_Click);
-			// 
-			// CalendarContextGoalBtn
-			// 
-			this.CalendarContextGoalBtn.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.CalendarContextGoalSetBtn,
-            this.CalendarContextGoalSeeBtn,
-            this.CalendarContextGoalClearBtn});
-			this.CalendarContextGoalBtn.Name = "CalendarContextGoalBtn";
-			this.CalendarContextGoalBtn.Size = new System.Drawing.Size(180, 22);
-			this.CalendarContextGoalBtn.Text = "Goal";
-			this.CalendarContextGoalBtn.DropDownOpening += new System.EventHandler(this.CalendarContextGoalBtn_DropDownOpening);
-			// 
-			// CalendarContextGoalSetBtn
-			// 
-			this.CalendarContextGoalSetBtn.Name = "CalendarContextGoalSetBtn";
-			this.CalendarContextGoalSetBtn.Size = new System.Drawing.Size(145, 22);
-			this.CalendarContextGoalSetBtn.Text = "Set Selected";
-			this.CalendarContextGoalSetBtn.Click += new System.EventHandler(this.CalendarContextGoalSetBtn_Click);
-			// 
-			// CalendarContextGoalSeeBtn
-			// 
-			this.CalendarContextGoalSeeBtn.Name = "CalendarContextGoalSeeBtn";
-			this.CalendarContextGoalSeeBtn.Size = new System.Drawing.Size(145, 22);
-			this.CalendarContextGoalSeeBtn.Text = "See Existing";
-			this.CalendarContextGoalSeeBtn.Click += new System.EventHandler(this.CalendarContextGoalSeeBtn_Click);
-			// 
-			// CalendarContextGoalClearBtn
-			// 
-			this.CalendarContextGoalClearBtn.Name = "CalendarContextGoalClearBtn";
-			this.CalendarContextGoalClearBtn.Size = new System.Drawing.Size(145, 22);
-			this.CalendarContextGoalClearBtn.Text = "Clear Existing";
-			this.CalendarContextGoalClearBtn.Click += new System.EventHandler(this.CalendarContextGoalClearBtn_Click);
-			// 
-			// CalendarContextNotesBtn
-			// 
-			this.CalendarContextNotesBtn.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.calendarContextNotesTxt});
-			this.CalendarContextNotesBtn.Name = "CalendarContextNotesBtn";
-			this.CalendarContextNotesBtn.Size = new System.Drawing.Size(180, 22);
-			this.CalendarContextNotesBtn.Text = "Notes";
-			this.CalendarContextNotesBtn.DropDownOpening += new System.EventHandler(this.CalendarContextNotesBtn_DropDownOpening);
-			this.CalendarContextNotesBtn.Click += new System.EventHandler(this.CalendarContextNotesBtn_Click);
-			// 
-			// calendarContextNotesTxt
-			// 
-			this.calendarContextNotesTxt.Name = "calendarContextNotesTxt";
-			this.calendarContextNotesTxt.Size = new System.Drawing.Size(150, 23);
-			this.calendarContextNotesTxt.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CalendarContextNotesTxt_KeyDown);
-			// 
-			// CalendarContextMoodBtn
-			// 
-			this.CalendarContextMoodBtn.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.CalendarContextMoodDrop});
-			this.CalendarContextMoodBtn.Name = "CalendarContextMoodBtn";
-			this.CalendarContextMoodBtn.Size = new System.Drawing.Size(180, 22);
-			this.CalendarContextMoodBtn.Text = "Mood";
-			this.CalendarContextMoodBtn.DropDownOpening += new System.EventHandler(this.CalendarContextMoodBtn_DropDownOpening);
-			// 
-			// CalendarContextMoodDrop
-			// 
-			this.CalendarContextMoodDrop.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.CalendarContextMoodDrop.Items.AddRange(new object[] {
-            "10 - verging apotheosis",
-            "09 - master and commander",
-            "08 - onboard I\'m the captain so climb abord",
-            "07 - it\'s a nice day outside",
-            "06 - I\'m awake, so there\'s that",
-            "05 - no awareness of problems or joys, existing in the moment",
-            "04 - everyone should piss off",
-            "03 - full of hate for the person you are and represent",
-            "02 - verging suicide, leave the rest to their retarded joys",
-            "01 - end existence, end the universe, end it all, initiate the next Big Bang"});
-			this.CalendarContextMoodDrop.Name = "CalendarContextMoodDrop";
-			this.CalendarContextMoodDrop.Size = new System.Drawing.Size(400, 23);
-			this.CalendarContextMoodDrop.SelectedIndexChanged += new System.EventHandler(this.CalendarContextMoodDrop_SelectedIndexChanged);
-			// 
-			// CalendarContextDesireBtn
-			// 
-			this.CalendarContextDesireBtn.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.CalendarContextDesireDrop});
-			this.CalendarContextDesireBtn.Name = "CalendarContextDesireBtn";
-			this.CalendarContextDesireBtn.Size = new System.Drawing.Size(180, 22);
-			this.CalendarContextDesireBtn.Text = "Desire";
-			this.CalendarContextDesireBtn.DropDownOpening += new System.EventHandler(this.CalendarContextDesireBtn_DropDownOpening);
-			// 
-			// CalendarContextDesireDrop
-			// 
-			this.CalendarContextDesireDrop.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.CalendarContextDesireDrop.Items.AddRange(new object[] {
-            "5 - verging uncontrollable",
-            "4 - extreme",
-            "3 - average and ready",
-            "2 - could be asked to",
-            "1 - flat line nothing",
-            "0 - repulsion"});
-			this.CalendarContextDesireDrop.Name = "CalendarContextDesireDrop";
-			this.CalendarContextDesireDrop.Size = new System.Drawing.Size(150, 23);
-			this.CalendarContextDesireDrop.SelectedIndexChanged += new System.EventHandler(this.CalendarContextDesireDrop_SelectedIndexChanged);
+			this.YearCalendar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.YearCalendar_MouseDown);
+			this.YearCalendar.MouseUp += new System.Windows.Forms.MouseEventHandler(this.YearCalendar_MouseUp);
 			// 
 			// mainMenuStrip
 			// 
@@ -356,7 +236,7 @@ namespace GoalTrackerPointGiver
 			// 
 			this.EscBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.EscBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.EscBtn.Location = new System.Drawing.Point(993, 459);
+			this.EscBtn.Location = new System.Drawing.Point(899, 468);
 			this.EscBtn.Name = "EscBtn";
 			this.EscBtn.Size = new System.Drawing.Size(37, 21);
 			this.EscBtn.TabIndex = 9;
@@ -364,32 +244,273 @@ namespace GoalTrackerPointGiver
 			this.EscBtn.UseVisualStyleBackColor = true;
 			this.EscBtn.Click += new System.EventHandler(this.EscBtn_Click);
 			// 
+			// notifyIcon1
+			// 
+			this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
+			this.notifyIcon1.Text = "Goal Tracker Point Giver";
+			this.notifyIcon1.Visible = true;
+			// 
+			// MarkBtn
+			// 
+			this.MarkBtn.Location = new System.Drawing.Point(946, 128);
+			this.MarkBtn.Name = "MarkBtn";
+			this.MarkBtn.Size = new System.Drawing.Size(88, 23);
+			this.MarkBtn.TabIndex = 10;
+			this.MarkBtn.Text = "Mark";
+			this.MarkBtn.UseVisualStyleBackColor = true;
+			this.MarkBtn.Click += new System.EventHandler(this.MarkBtn_Click);
+			// 
+			// groupBox1
+			// 
+			this.groupBox1.Controls.Add(this.GoalSeeChck);
+			this.groupBox1.Controls.Add(this.GoalClearBtn);
+			this.groupBox1.Controls.Add(this.GoalSetBtn);
+			this.groupBox1.Location = new System.Drawing.Point(946, 157);
+			this.groupBox1.Name = "groupBox1";
+			this.groupBox1.Size = new System.Drawing.Size(88, 99);
+			this.groupBox1.TabIndex = 13;
+			this.groupBox1.TabStop = false;
+			this.groupBox1.Text = "Goal";
+			// 
+			// GoalSeeChck
+			// 
+			this.GoalSeeChck.AutoSize = true;
+			this.GoalSeeChck.Location = new System.Drawing.Point(6, 48);
+			this.GoalSeeChck.Name = "GoalSeeChck";
+			this.GoalSeeChck.Size = new System.Drawing.Size(45, 17);
+			this.GoalSeeChck.TabIndex = 14;
+			this.GoalSeeChck.Text = "See";
+			this.GoalSeeChck.UseVisualStyleBackColor = true;
+			this.GoalSeeChck.CheckedChanged += new System.EventHandler(this.GoalSeeChck_CheckedChanged);
+			this.GoalSeeChck.EnabledChanged += new System.EventHandler(this.GoalSeeChck_EnabledChanged);
+			// 
+			// GoalClearBtn
+			// 
+			this.GoalClearBtn.Location = new System.Drawing.Point(6, 71);
+			this.GoalClearBtn.Name = "GoalClearBtn";
+			this.GoalClearBtn.Size = new System.Drawing.Size(76, 23);
+			this.GoalClearBtn.TabIndex = 15;
+			this.GoalClearBtn.Text = "Clear";
+			this.GoalClearBtn.UseVisualStyleBackColor = true;
+			this.GoalClearBtn.Click += new System.EventHandler(this.GoalClearBtn_Click);
+			// 
+			// GoalSetBtn
+			// 
+			this.GoalSetBtn.Location = new System.Drawing.Point(6, 19);
+			this.GoalSetBtn.Name = "GoalSetBtn";
+			this.GoalSetBtn.Size = new System.Drawing.Size(76, 23);
+			this.GoalSetBtn.TabIndex = 0;
+			this.GoalSetBtn.Text = "Set";
+			this.GoalSetBtn.UseVisualStyleBackColor = true;
+			this.GoalSetBtn.Click += new System.EventHandler(this.GoalSetBtn_Click);
+			// 
+			// DaysLabel
+			// 
+			this.DaysLabel.AutoSize = true;
+			this.DaysLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Underline);
+			this.DaysLabel.Location = new System.Drawing.Point(943, 110);
+			this.DaysLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+			this.DaysLabel.Name = "DaysLabel";
+			this.DaysLabel.Size = new System.Drawing.Size(32, 15);
+			this.DaysLabel.TabIndex = 14;
+			this.DaysLabel.Text = "Days";
+			// 
+			// dateItem1
+			// 
+			this.dateItem1.BackColor1 = System.Drawing.Color.White;
+			this.dateItem1.BackColor2 = System.Drawing.Color.Transparent;
+			this.dateItem1.BackgroundImage = null;
+			this.dateItem1.BoldedDate = true;
+			this.dateItem1.Date = new System.DateTime(2023, 11, 14, 0, 0, 0, 0);
+			this.dateItem1.DateColor = System.Drawing.Color.Black;
+			this.dateItem1.Enabled = true;
+			this.dateItem1.GradientMode = Pabo.Calendar.mcGradientMode.None;
+			this.dateItem1.Image = null;
+			this.dateItem1.ImageListIndex = -1;
+			this.dateItem1.Pattern = Pabo.Calendar.mcDayInfoRecurrence.None;
+			this.dateItem1.Range = new System.DateTime(2023, 11, 14, 0, 0, 0, 0);
+			this.dateItem1.Tag = null;
+			this.dateItem1.Text = "";
+			this.dateItem1.TextColor = System.Drawing.Color.Empty;
+			this.dateItem1.Weekend = false;
+			// 
+			// MoodChart
+			// 
+			chartArea3.AxisX.Enabled = System.Windows.Forms.DataVisualization.Charting.AxisEnabled.False;
+			chartArea3.AxisY.Enabled = System.Windows.Forms.DataVisualization.Charting.AxisEnabled.False;
+			chartArea3.Name = "ChartArea1";
+			this.MoodChart.ChartAreas.Add(chartArea3);
+			this.MoodChart.ContextMenuStrip = this.MoodContextMenu;
+			this.MoodChart.Location = new System.Drawing.Point(946, 277);
+			this.MoodChart.Name = "MoodChart";
+			series3.BorderWidth = 0;
+			series3.ChartArea = "ChartArea1";
+			series3.LabelBorderWidth = 0;
+			series3.MarkerBorderWidth = 0;
+			series3.MarkerSize = 0;
+			series3.Name = "Series1";
+			this.MoodChart.Series.Add(series3);
+			this.MoodChart.Size = new System.Drawing.Size(88, 40);
+			this.MoodChart.TabIndex = 15;
+			this.MoodChart.Text = "chart1";
+			this.MoodChart.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.MoodChart_MouseDoubleClick);
+			// 
+			// MoodContextMenu
+			// 
+			this.MoodContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MoodContextDrop});
+			this.MoodContextMenu.Name = "MoodContextMenu";
+			this.MoodContextMenu.Size = new System.Drawing.Size(461, 31);
+			this.MoodContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.MoodContextMenu_Opening);
+			// 
+			// MoodContextDrop
+			// 
+			this.MoodContextDrop.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.MoodContextDrop.Items.AddRange(new object[] {
+            "10 - verging apotheosis",
+            "09 - master and commander",
+            "08 - onboard I\'m the captain so climb abord",
+            "07 - it\'s a nice day outside",
+            "06 - I\'m awake, so there\'s that",
+            "05 - no awareness of problems or joys, existing in the moment",
+            "04 - everyone should piss off",
+            "03 - full of hate for the person you are and represent",
+            "02 - verging suicide, leave the rest to their retarded joys",
+            "01 - end existence, end the universe, end it all, initiate the next Big Bang",
+            "Clear"});
+			this.MoodContextDrop.Name = "MoodContextDrop";
+			this.MoodContextDrop.Size = new System.Drawing.Size(400, 23);
+			this.MoodContextDrop.SelectedIndexChanged += new System.EventHandler(this.MoodContextDrop_SelectedIndexChanged);
+			// 
+			// DesireChart
+			// 
+			chartArea1.AxisX.Enabled = System.Windows.Forms.DataVisualization.Charting.AxisEnabled.False;
+			chartArea1.AxisY.Enabled = System.Windows.Forms.DataVisualization.Charting.AxisEnabled.False;
+			chartArea1.Name = "ChartArea1";
+			this.DesireChart.ChartAreas.Add(chartArea1);
+			this.DesireChart.ContextMenuStrip = this.DesireContextMenu;
+			this.DesireChart.Location = new System.Drawing.Point(946, 338);
+			this.DesireChart.Name = "DesireChart";
+			series1.BorderWidth = 0;
+			series1.ChartArea = "ChartArea1";
+			series1.LabelBorderWidth = 0;
+			series1.MarkerBorderWidth = 0;
+			series1.Name = "Series1";
+			this.DesireChart.Series.Add(series1);
+			this.DesireChart.Size = new System.Drawing.Size(88, 40);
+			this.DesireChart.TabIndex = 16;
+			this.DesireChart.Text = "chart2";
+			this.DesireChart.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.DesireChart_MouseDoubleClick);
+			// 
+			// DesireContextMenu
+			// 
+			this.DesireContextMenu.ImageScalingSize = new System.Drawing.Size(24, 24);
+			this.DesireContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.DesireContextDrop});
+			this.DesireContextMenu.Name = "CalendarContextMenu";
+			this.DesireContextMenu.Size = new System.Drawing.Size(211, 31);
+			this.DesireContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.DesireContextMenu_Opening);
+			// 
+			// DesireContextDrop
+			// 
+			this.DesireContextDrop.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.DesireContextDrop.Items.AddRange(new object[] {
+            "5 - verging uncontrollable",
+            "4 - extreme",
+            "3 - average and ready",
+            "2 - could be asked to",
+            "1 - flat line nothing",
+            "0 - repulsion",
+            "Clear"});
+			this.DesireContextDrop.Name = "DesireContextDrop";
+			this.DesireContextDrop.Size = new System.Drawing.Size(150, 23);
+			this.DesireContextDrop.SelectedIndexChanged += new System.EventHandler(this.DesireContextDrop_SelectedIndexChanged);
+			// 
+			// NotesTxtBox
+			// 
+			this.NotesTxtBox.Location = new System.Drawing.Point(946, 399);
+			this.NotesTxtBox.Multiline = true;
+			this.NotesTxtBox.Name = "NotesTxtBox";
+			this.NotesTxtBox.Size = new System.Drawing.Size(91, 90);
+			this.NotesTxtBox.TabIndex = 17;
+			this.NotesTxtBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.NotesTxtBox_KeyDown);
+			// 
+			// label2
+			// 
+			this.label2.AutoSize = true;
+			this.label2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Underline);
+			this.label2.Location = new System.Drawing.Point(946, 259);
+			this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(42, 15);
+			this.label2.TabIndex = 18;
+			this.label2.Text = "Mood:";
+			// 
+			// label4
+			// 
+			this.label4.AutoSize = true;
+			this.label4.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Underline);
+			this.label4.Location = new System.Drawing.Point(946, 320);
+			this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+			this.label4.Name = "label4";
+			this.label4.Size = new System.Drawing.Size(42, 15);
+			this.label4.TabIndex = 19;
+			this.label4.Text = "Desire:";
+			// 
+			// label5
+			// 
+			this.label5.AutoSize = true;
+			this.label5.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Underline);
+			this.label5.Location = new System.Drawing.Point(946, 381);
+			this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+			this.label5.Name = "label5";
+			this.label5.Size = new System.Drawing.Size(41, 15);
+			this.label5.TabIndex = 20;
+			this.label5.Text = "Notes:";
+			// 
 			// GoalTrackerPointGiver
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.EscBtn;
 			this.ClientSize = new System.Drawing.Size(1042, 492);
-			this.Controls.Add(this.EscBtn);
+			this.Controls.Add(this.label5);
+			this.Controls.Add(this.label4);
+			this.Controls.Add(this.label2);
+			this.Controls.Add(this.NotesTxtBox);
+			this.Controls.Add(this.DesireChart);
+			this.Controls.Add(this.MoodChart);
+			this.Controls.Add(this.DaysLabel);
+			this.Controls.Add(this.groupBox1);
+			this.Controls.Add(this.MarkBtn);
 			this.Controls.Add(this.YearUpD);
 			this.Controls.Add(this.TrackerDrop);
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.YearCalendar);
 			this.Controls.Add(this.mainMenuStrip);
+			this.Controls.Add(this.EscBtn);
+			this.DoubleBuffered = true;
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MainMenuStrip = this.mainMenuStrip;
 			this.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+			this.MaximizeBox = false;
 			this.Name = "GoalTrackerPointGiver";
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
 			this.Text = "Goal Tracker Point Giver - I\'ll give you points!";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.GoalTrackerPointGiver_FormClosing);
 			this.Load += new System.EventHandler(this.GoalTrackerPointGiver_Load);
-			this.CalendarContextMenu.ResumeLayout(false);
 			this.mainMenuStrip.ResumeLayout(false);
 			this.mainMenuStrip.PerformLayout();
 			this.calendarDropContextMenu.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.YearUpD)).EndInit();
+			this.groupBox1.ResumeLayout(false);
+			this.groupBox1.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.MoodChart)).EndInit();
+			this.MoodContextMenu.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.DesireChart)).EndInit();
+			this.DesireContextMenu.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -403,10 +524,6 @@ namespace GoalTrackerPointGiver
 		private Label label1;
 		private Label label3;
 		private ComboBox TrackerDrop;
-		private ContextMenuStrip CalendarContextMenu;
-		private ToolStripMenuItem CalendarContextDatesBtn;
-		private ToolStripMenuItem CalendarContextMarkDatesBtn;
-		private ToolStripMenuItem CalendarContextClearDatesBtn;
 		private NumericUpDown YearUpD;
 		private ContextMenuStrip calendarDropContextMenu;
 		private ToolStripMenuItem renameCalendarMenu;
@@ -415,18 +532,26 @@ namespace GoalTrackerPointGiver
 		private ToolStripMenuItem addCalendarMenu;
 		private ToolStripTextBox addCalendarTextBox;
 		private ToolStripMenuItem removeCalendarMenuBtn;
-		private ToolStripMenuItem CalendarContextNotesBtn;
-		private ToolStripTextBox calendarContextNotesTxt;
 		private ToolTip toolTip1;
-		private ToolStripMenuItem CalendarContextMoodBtn;
 		private Button EscBtn;
-		private ToolStripComboBox CalendarContextMoodDrop;
-		private ToolStripMenuItem CalendarContextDesireBtn;
-		private ToolStripComboBox CalendarContextDesireDrop;
-		private ToolStripMenuItem CalendarContextGoalBtn;
-		private ToolStripMenuItem CalendarContextGoalSetBtn;
-		private ToolStripMenuItem CalendarContextGoalSeeBtn;
-		private ToolStripMenuItem CalendarContextGoalClearBtn;
+		private NotifyIcon notifyIcon1;
+		private Button MarkBtn;
+		private GroupBox groupBox1;
+		private Button GoalClearBtn;
+		private Button GoalSetBtn;
+		private CheckBox GoalSeeChck;
+		private Label DaysLabel;
+		private Pabo.Calendar.DateItem dateItem1;
+		private System.Windows.Forms.DataVisualization.Charting.Chart MoodChart;
+		private System.Windows.Forms.DataVisualization.Charting.Chart DesireChart;
+		private TextBox NotesTxtBox;
+		private Label label2;
+		private Label label4;
+		private ContextMenuStrip DesireContextMenu;
+		private ContextMenuStrip MoodContextMenu;
+		private ToolStripComboBox MoodContextDrop;
+		private ToolStripComboBox DesireContextDrop;
+		private Label label5;
 	}
 }
 

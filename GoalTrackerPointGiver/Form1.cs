@@ -6,6 +6,8 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
+using System.Windows.Forms.VisualStyles;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 
 namespace GoalTrackerPointGiver
@@ -46,6 +48,32 @@ namespace GoalTrackerPointGiver
 				calendarindex = 0;
 				YearUpD.Value = DateTime.Now.Year;
 				CALENDAR = new FITSBinTable("CALENDAR");
+
+				bool[] marked = new bool[365];
+				if (DateTime.IsLeapYear((int)YearUpD.Value))
+					marked = new bool[366];
+				CALENDAR.AddTTYPEEntry("default", true, "", marked);
+
+				sbyte[] mood = new sbyte[365];
+				sbyte[] desire = new sbyte[365];
+				string[] notes = new string[365];
+				if (DateTime.IsLeapYear((int)YearUpD.Value))
+				{
+					mood = new sbyte[366];
+					desire = new sbyte[366];
+					notes = new string[366];
+				}
+					
+				for (int i = 0; i < mood.Length; i++)
+				{
+					mood[i] = -1;
+					desire[i] = -1;
+					notes[i] = " ";
+				}
+				CALENDAR.AddTTYPEEntry("MOOD", true, "", mood);
+				CALENDAR.AddTTYPEEntry("DESIRE", true, "", desire);
+				CALENDAR.AddTTYPEEntry("NOTES", true, "", notes, FITSBinTable.EntryArrayFormat.IsHeapVariableLengthRows);
+				CALENDAR.AddExtraHeaderKey("YEAR", YearUpD.Value.ToString(), "the year of the calendar extension");
 			}
 
 			DISABLEREACTIONS = false;
@@ -55,6 +83,7 @@ namespace GoalTrackerPointGiver
 			{
 				this.Left = (int)REG.GetReg("GoalTrackerPointGiver", "startx");
 				this.Top = (int)REG.GetReg("GoalTrackerPointGiver", "starty");
+				GoalSeeChck.Checked = Convert.ToBoolean(REG.GetReg("GoalTrackerPointGiver", "GoalSeeChck"));
 			}
 			catch
 			{
@@ -62,16 +91,14 @@ namespace GoalTrackerPointGiver
 			}
 		}
 
-		private void CalendarContextMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+		private void GoalTrackerPointGiver_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			if (YearCalendar.SelectionRange.Start.Month == YearCalendar.SelectionRange.End.Month && YearCalendar.SelectionRange.Start.Day == YearCalendar.SelectionRange.End.Day)
-				CalendarContextDatesBtn.Text = YearCalendar.SelectionRange.Start.Month + "-" + YearCalendar.SelectionRange.Start.Day;
-			else
-				CalendarContextDatesBtn.Text = YearCalendar.SelectionRange.Start.Month + "-" + YearCalendar.SelectionRange.Start.Day + " to " + YearCalendar.SelectionRange.End.Month + "-" + YearCalendar.SelectionRange.End.Day;
-
-			//check if selection range already contains any bolded dates, and if it does, give option to clear those
-			//yearCalendar.SelectionRange
-		}
+			REG.SetReg("GoalTrackerPointGiver", "calendarDrop", TrackerDrop.SelectedIndex);
+			REG.SetReg("GoalTrackerPointGiver", "yearUpD", YearUpD.Value);
+			REG.SetReg("GoalTrackerPointGiver", "startx", this.Location.X);
+			REG.SetReg("GoalTrackerPointGiver", "starty", this.Location.Y);
+			REG.SetReg("GoalTrackerPointGiver", "GoalSeeChck", GoalSeeChck.Checked);
+		}		
 
 		private void UpdateCalendarMarkedDates()
 		{
@@ -84,57 +111,140 @@ namespace GoalTrackerPointGiver
 			CALENDAR.Write(Path.Combine(CALENDARSPATH, YearUpD.Value.ToString()), true);
 		}
 
-		private void CalendarContextMarkDatesBtn_Click(object sender, EventArgs e)
+		private void MarkBtn_Click(object sender, EventArgs e)
 		{
-			int Ndays = YearCalendar.SelectionRange.End.DayOfYear - YearCalendar.SelectionRange.Start.DayOfYear + 1;
-			int currentmonth = YearCalendar.SelectionRange.Start.Month;
-			int currentstartday = YearCalendar.SelectionRange.Start.Day;
-			int accumulateddays = 1;
+			if (MarkBtn.Text == "Mark")
+			{
+				int Ndays = YearCalendar.SelectionRange.End.DayOfYear - YearCalendar.SelectionRange.Start.DayOfYear + 1;
+				int currentmonth = YearCalendar.SelectionRange.Start.Month;
+				int currentstartday = YearCalendar.SelectionRange.Start.Day;
+				int accumulateddays = 1;
 
-			for (int i = 0; i < Ndays; i++)
-				if (i == 0)
-					YearCalendar.AddBoldedDate(new DateTime(YearCalendar.SelectionRange.Start.Year, YearCalendar.SelectionRange.Start.Month, YearCalendar.SelectionRange.Start.Day));
-				else if ((currentstartday + accumulateddays) <= DateTime.DaysInMonth(YearCalendar.SelectionRange.Start.Year, currentmonth))
-					YearCalendar.AddBoldedDate(new DateTime(YearCalendar.SelectionRange.Start.Year, currentmonth, currentstartday + accumulateddays++));
-				else
-				{
-					currentmonth++;
-					currentstartday = 1;
-					accumulateddays = 1;
-					YearCalendar.AddBoldedDate(new DateTime(YearCalendar.SelectionRange.Start.Year, currentmonth, currentstartday));
-				}
+				for (int i = 0; i < Ndays; i++)
+					if (i == 0)
+						YearCalendar.AddBoldedDate(new DateTime(YearCalendar.SelectionRange.Start.Year, YearCalendar.SelectionRange.Start.Month, YearCalendar.SelectionRange.Start.Day));
+					else if ((currentstartday + accumulateddays) <= DateTime.DaysInMonth(YearCalendar.SelectionRange.Start.Year, currentmonth))
+						YearCalendar.AddBoldedDate(new DateTime(YearCalendar.SelectionRange.Start.Year, currentmonth, currentstartday + accumulateddays++));
+					else
+					{
+						currentmonth++;
+						currentstartday = 1;
+						accumulateddays = 1;
+						YearCalendar.AddBoldedDate(new DateTime(YearCalendar.SelectionRange.Start.Year, currentmonth, currentstartday));
+					}
+
+				MarkBtn.Text = "Clear";
+			}
+			else
+			{
+				int Ndays = YearCalendar.SelectionRange.End.DayOfYear - YearCalendar.SelectionRange.Start.DayOfYear + 1;
+				int currentmonth = YearCalendar.SelectionRange.Start.Month;
+				int currentstartday = YearCalendar.SelectionRange.Start.Day;
+				int accumulateddays = 1;
+
+				for (int i = 0; i < Ndays; i++)
+					if (i == 0)
+						YearCalendar.RemoveBoldedDate(new DateTime(YearCalendar.SelectionRange.Start.Year, YearCalendar.SelectionRange.Start.Month, YearCalendar.SelectionRange.Start.Day));
+					else if ((currentstartday + accumulateddays) <= DateTime.DaysInMonth(YearCalendar.SelectionRange.Start.Year, currentmonth))
+						YearCalendar.RemoveBoldedDate(new DateTime(YearCalendar.SelectionRange.Start.Year, currentmonth, currentstartday + accumulateddays++));
+					else
+					{
+						currentmonth++;
+						currentstartday = 1;
+						accumulateddays = 1;
+						YearCalendar.RemoveBoldedDate(new DateTime(YearCalendar.SelectionRange.Start.Year, currentmonth, currentstartday));
+					}
+
+				MarkBtn.Text = "Mark";
+			}
 
 			YearCalendar.UpdateBoldedDates();
-
 			UpdateCalendarMarkedDates();
 		}
 
-		private void CalendarContextClearDatesBtn_Click(object sender, EventArgs e)
+		private void YearCalendar_MouseUp(object sender, MouseEventArgs e)
 		{
-			int Ndays = YearCalendar.SelectionRange.End.DayOfYear - YearCalendar.SelectionRange.Start.DayOfYear + 1;
-			int currentmonth = YearCalendar.SelectionRange.Start.Month;
-			int currentstartday = YearCalendar.SelectionRange.Start.Day;
-			int accumulateddays = 1;
+			if (e.Button == MouseButtons.Left)
+			{
+				bool[] marked = CALENDAR.GetTTYPEEntry(TrackerDrop.SelectedItem.ToString(), out _, out _) as bool[];
+				int ndays = YearCalendar.SelectionEnd.DayOfYear - YearCalendar.SelectionStart.DayOfYear + 1;
+				int selectedNmarked = 0;
+				for (int i = 0; i < ndays; i++)
+					if (marked[YearCalendar.SelectionStart.AddDays(i).DayOfYear - 1])
+						selectedNmarked++;
 
-			for (int i = 0; i < Ndays; i++)
-				if (i == 0)
-					YearCalendar.RemoveBoldedDate(new DateTime(YearCalendar.SelectionRange.Start.Year, YearCalendar.SelectionRange.Start.Month, YearCalendar.SelectionRange.Start.Day));
-				else if ((currentstartday + accumulateddays) <= DateTime.DaysInMonth(YearCalendar.SelectionRange.Start.Year, currentmonth))
-					YearCalendar.RemoveBoldedDate(new DateTime(YearCalendar.SelectionRange.Start.Year, currentmonth, currentstartday + accumulateddays++));
+				if (selectedNmarked < ndays)
+					MarkBtn.Text = "Mark";
 				else
+					MarkBtn.Text = "Clear";
+
+				if (YearCalendar.SelectionRange.Start.Month == YearCalendar.SelectionRange.End.Month && YearCalendar.SelectionRange.Start.Day == YearCalendar.SelectionRange.End.Day)
 				{
-					currentmonth++;
-					currentstartday = 1;
-					accumulateddays = 1;
-					YearCalendar.RemoveBoldedDate(new DateTime(YearCalendar.SelectionRange.Start.Year, currentmonth, currentstartday));
+					DaysLabel.Text = YearCalendar.SelectionRange.Start.Month + "-" + YearCalendar.SelectionRange.Start.Day;
+					NotesTxtBox.Text = Encoding.UTF8.GetString(Convert.FromBase64String((CALENDAR.GetTTYPEEntry("NOTES", out _, out _) as string[])[YearCalendar.SelectionRange.Start.DayOfYear - 1]));
 				}
+				else
+					DaysLabel.Text = YearCalendar.SelectionRange.Start.Month + "-" + YearCalendar.SelectionRange.Start.Day + " to " + YearCalendar.SelectionRange.End.Month + "-" + YearCalendar.SelectionRange.End.Day;
 
-			YearCalendar.UpdateBoldedDates();
+				sbyte[] mood = CALENDAR.GetTTYPEEntry("MOOD", out _, out _) as sbyte[];
+				sbyte[] moodata = new sbyte[ndays];
+				Array.Copy(mood, YearCalendar.SelectionStart.DayOfYear - 1, moodata, 0, moodata.Length);
+				MoodChart.Series[0].Points.Clear();
+				for (int i = 0; i < moodata.Length; i++)
+					if (moodata[i] != -1)
+						MoodChart.Series[0].Points.AddXY(YearCalendar.SelectionStart.AddDays(i).DayOfYear, 11 - moodata[i]);
+				MoodChart.ChartAreas[0].AxisY.Maximum = 11;
 
-			UpdateCalendarMarkedDates();
-		}		
+				sbyte[] desire = CALENDAR.GetTTYPEEntry("DESIRE", out _, out _) as sbyte[];
+				sbyte[] desiredata = new sbyte[ndays];
+				Array.Copy(desire, YearCalendar.SelectionStart.DayOfYear - 1, desiredata, 0, desiredata.Length);
+				DesireChart.Series[0].Points.Clear();
+				for (int i = 0; i < desiredata.Length; i++)
+					if (desiredata[i] != -1)
+						DesireChart.Series[0].Points.AddXY(YearCalendar.SelectionStart.AddDays(i).DayOfYear, 6 - desiredata[i]);
+				DesireChart.ChartAreas[0].AxisY.Maximum = 6;
+			}
+		}
 
-		private void CalendarContextNotesTxt_KeyDown(object sender, KeyEventArgs e)
+		private void MoodChart_MouseDoubleClick(object sender, MouseEventArgs e)
+		{
+			//int year = Convert.ToInt32(CALENDAR.GetExtraHeaderKeyValue("YEAR"));
+			//int ndays = YearCalendar.SelectionEnd.DayOfYear - YearCalendar.SelectionStart.DayOfYear + 1;
+			//DateTime[] days = new DateTime[ndays];
+			//sbyte[] mood = CALENDAR.GetTTYPEEntry("MOOD", out _, out _) as sbyte[];
+			
+			//DayPlot dp = new DayPlot();
+			//dp.chart1.Series[0].Points.Clear();
+			//dp.chart1.Series[0].XValueType = ChartValueType.Date;
+			//dp.chart1.Series[0].YValueType = ChartValueType.Int32;
+			//dp.chart1.ChartAreas[0].AxisY.Maximum = 11;
+
+			//for (int i = 0; i < ndays; i++)
+			//{
+			//	dp.chart1.Series[0].Points.AddXY((new DateTime(year, 1, 1)).AddDays(YearCalendar.SelectionStart.DayOfYear + i - 1), 11 - mood[YearCalendar.SelectionStart.DayOfYear + i - 1]);
+			//}
+
+			////
+			//dp.Show();
+
+		}
+
+		private void DesireChart_MouseDoubleClick(object sender, MouseEventArgs e)
+		{
+
+		}
+
+		private void YearCalendar_MouseDown(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Left)
+			{
+				DISABLEREACTIONS = true;
+				GoalSeeChck.Checked = false;
+				DISABLEREACTIONS = false;
+			}
+		}
+
+		private void NotesTxtBox_KeyDown(object sender, KeyEventArgs e)
 		{
 			if (e.KeyCode == Keys.Enter)
 			{
@@ -143,12 +253,12 @@ namespace GoalTrackerPointGiver
 				string[] notes = new string[365];
 				if (CALENDAR.TTYPEEntryExists("NOTES"))
 					notes = CALENDAR.GetTTYPEEntry("NOTES", out _, out _) as string[];
-                else
+				else
 					if (DateTime.IsLeapYear((int)YearUpD.Value))
 						notes = new string[366];
 
-				notes[YearCalendar.SelectionStart.DayOfYear] = Convert.ToBase64String(Encoding.UTF8.GetBytes(calendarContextNotesTxt.Text));
-				calendarContextNotesTxt.Text = "";
+				notes[YearCalendar.SelectionStart.DayOfYear - 1] = Convert.ToBase64String(Encoding.UTF8.GetBytes(NotesTxtBox.Text));
+				NotesTxtBox.Text = "";
 
 				for (int i = 0; i < notes.Length; i++)
 					if (String.IsNullOrEmpty(notes[i]))
@@ -157,89 +267,83 @@ namespace GoalTrackerPointGiver
 				CALENDAR.AddTTYPEEntry("NOTES", true, "", notes, FITSBinTable.EntryArrayFormat.IsHeapVariableLengthRows);
 				CALENDAR.Write(Path.Combine(CALENDARSPATH, YearUpD.Value.ToString()), true);
 			}
-		}
+		}		
 
-		private void CalendarContextNotesBtn_Click(object sender, EventArgs e)
+		private void MoodContextDrop_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			if (!CALENDAR.TTYPEEntryExists("NOTES"))
+			if (MoodContextDrop.SelectedIndex == -1)
 				return;
 
-			string[] notes = CALENDAR.GetTTYPEEntry("NOTES", out _, out _) as string[];
-
-			if (!String.IsNullOrWhiteSpace(notes[YearCalendar.SelectionStart.DayOfYear]))
-				MessageBox.Show(Encoding.UTF8.GetString(Convert.FromBase64String(notes[YearCalendar.SelectionStart.DayOfYear])));
-		}
-
-		private void CalendarContextNotesBtn_DropDownOpening(object sender, EventArgs e)
-		{
-			if (!CALENDAR.TTYPEEntryExists("NOTES"))
-				return;
-
-			string[] notes = CALENDAR.GetTTYPEEntry("NOTES", out _, out _) as string[];
-
-			if (!String.IsNullOrWhiteSpace(notes[YearCalendar.SelectionStart.DayOfYear]))
-				calendarContextNotesTxt.Text = Encoding.UTF8.GetString(Convert.FromBase64String(notes[YearCalendar.SelectionStart.DayOfYear]));
-			else
-				calendarContextNotesTxt.Text = "";
-		}
-
-		private void CalendarContextMoodDrop_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			byte[] mood = new byte[365];
+			sbyte[] mood = new sbyte[365];
+			if (DateTime.IsLeapYear((int)YearUpD.Value))
+				mood = new sbyte[366];
+			
 			if (CALENDAR.TTYPEEntryExists("MOOD"))
-				mood = CALENDAR.GetTTYPEEntry("MOOD", out _, out _) as byte[];
+				mood = CALENDAR.GetTTYPEEntry("MOOD", out _, out _) as sbyte[];
 			else
-				if (DateTime.IsLeapYear((int)YearUpD.Value))
-					mood = new byte[366];
+				for (int i = 0; i < mood.Length; i++)
+					mood[i] = -1;
 
-			mood[YearCalendar.SelectionStart.DayOfYear] = (byte)(CalendarContextMoodDrop.SelectedIndex + 1);
+			if (MoodContextDrop.SelectedItem.ToString() == "Clear")
+				mood[YearCalendar.SelectionStart.DayOfYear - 1] = -1;
+			else
+				mood[YearCalendar.SelectionStart.DayOfYear - 1] = (sbyte)(MoodContextDrop.SelectedIndex);
 
 			CALENDAR.AddTTYPEEntry("MOOD", true, "", mood);
 			CALENDAR.Write(Path.Combine(CALENDARSPATH, YearUpD.Value.ToString()), true);
+
+			MoodContextMenu.Close();
+			YearCalendar_MouseUp(sender, new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
 		}
 
-		private void CalendarContextMoodBtn_DropDownOpening(object sender, EventArgs e)
+		private void MoodContextMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
 		{
 			if (!CALENDAR.TTYPEEntryExists("MOOD"))
 				return;
 
-			byte[] mood = CALENDAR.GetTTYPEEntry("MOOD", out _, out _) as byte[];
+			sbyte[] mood = CALENDAR.GetTTYPEEntry("MOOD", out _, out _) as sbyte[];
 
-			if (mood[YearCalendar.SelectionStart.DayOfYear] != 0)
-				CalendarContextMoodDrop.SelectedIndex = mood[YearCalendar.SelectionStart.DayOfYear] - 1;
-			else
-				CalendarContextMoodDrop.SelectedIndex = -1;
-		}
+			MoodContextDrop.SelectedIndex = mood[YearCalendar.SelectionStart.DayOfYear - 1];
+		}		
 
-		private void CalendarContextDesireDrop_SelectedIndexChanged(object sender, EventArgs e)
+		private void DesireContextDrop_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			byte[] desire = new byte[365];
-			if (CALENDAR.TTYPEEntryExists("DESIRE"))
-				desire = CALENDAR.GetTTYPEEntry("DESIRE", out _, out _) as byte[];
-			else
-				if (DateTime.IsLeapYear((int)YearUpD.Value))
-					desire = new byte[366];
+			if (DesireContextDrop.SelectedIndex == -1)
+				return;
 
-			desire[YearCalendar.SelectionStart.DayOfYear] = (byte)(CalendarContextDesireDrop.SelectedIndex + 1);
+			sbyte[] desire = new sbyte[365];
+			if (DateTime.IsLeapYear((int)YearUpD.Value))
+				desire = new sbyte[366];
+
+			if (CALENDAR.TTYPEEntryExists("DESIRE"))
+				desire = CALENDAR.GetTTYPEEntry("DESIRE", out _, out _) as sbyte[];
+			else
+				for (int i = 0; i < desire.Length; i++)
+					desire[i] = -1;
+
+			if (DesireContextDrop.SelectedItem.ToString() == "Clear")
+				desire[YearCalendar.SelectionStart.DayOfYear - 1] = -1;
+			else
+				desire[YearCalendar.SelectionStart.DayOfYear - 1] = (sbyte)(DesireContextDrop.SelectedIndex);
 
 			CALENDAR.AddTTYPEEntry("DESIRE", true, "", desire);
 			CALENDAR.Write(Path.Combine(CALENDARSPATH, YearUpD.Value.ToString()), true);
+
+			DesireContextMenu.Close();
+			YearCalendar_MouseUp(sender, new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0));
 		}
 
-		private void CalendarContextDesireBtn_DropDownOpening(object sender, EventArgs e)
+		private void DesireContextMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
 		{
 			if (!CALENDAR.TTYPEEntryExists("DESIRE"))
 				return;
 
-			byte[] desire = CALENDAR.GetTTYPEEntry("DESIRE", out _, out _) as byte[];
+			sbyte[] desire = CALENDAR.GetTTYPEEntry("DESIRE", out _, out _) as sbyte[];
 
-			if (desire[YearCalendar.SelectionStart.DayOfYear] != 0)
-				CalendarContextDesireDrop.SelectedIndex = desire[YearCalendar.SelectionStart.DayOfYear] - 1;
-			else
-				CalendarContextDesireDrop.SelectedIndex = -1;
+			DesireContextDrop.SelectedIndex = desire[YearCalendar.SelectionStart.DayOfYear - 1];
 		}
 
-		private void CalendarContextGoalSetBtn_Click(object sender, EventArgs e)
+		private void GoalSetBtn_Click(object sender, EventArgs e)
 		{
 			CALENDAR.RemoveExtraHeaderKey(TrackerDrop.SelectedItem.ToString() + "S");
 			CALENDAR.RemoveExtraHeaderKey(TrackerDrop.SelectedItem.ToString() + "E");
@@ -247,10 +351,24 @@ namespace GoalTrackerPointGiver
 			CALENDAR.AddExtraHeaderKey(TrackerDrop.SelectedItem.ToString() + "S", YearCalendar.SelectionRange.Start.DayOfYear.ToString(), "goal start day");
 			CALENDAR.AddExtraHeaderKey(TrackerDrop.SelectedItem.ToString() + "E", YearCalendar.SelectionRange.End.DayOfYear.ToString(), "goal end day");
 			CALENDAR.Write(Path.Combine(CALENDARSPATH, YearUpD.Value.ToString()), true);
+
+			GoalSeeChck.Checked = true;
+			GoalSeeChck.Enabled = true;
+			GoalClearBtn.Enabled = true;
 		}
 
-		private void CalendarContextGoalSeeBtn_Click(object sender, EventArgs e)
+		private void GoalSeeChck_CheckedChanged(object sender, EventArgs e)
 		{
+			if (DISABLEREACTIONS)
+				return;
+
+			if (!GoalSeeChck.Checked)
+			{
+				YearCalendar.SelectionStart = DateTime.Today;
+				YearCalendar.SelectionEnd = DateTime.Today;
+				return;
+			}
+
 			int strt = Convert.ToInt32(CALENDAR.GetExtraHeaderKeyValue(TrackerDrop.SelectedItem.ToString() + "S"));
 			int end = Convert.ToInt32(CALENDAR.GetExtraHeaderKeyValue(TrackerDrop.SelectedItem.ToString() + "E"));
 
@@ -260,38 +378,32 @@ namespace GoalTrackerPointGiver
 			YearCalendar.SetSelectionRange(st, en);
 		}
 
-		private void CalendarContextGoalClearBtn_Click(object sender, EventArgs e)
+		private void GoalSeeChck_EnabledChanged(object sender, EventArgs e)
+		{
+			if (DISABLEREACTIONS)
+				return;
+
+			if (GoalSeeChck.Enabled == false)
+			{
+				YearCalendar.SelectionStart = DateTime.Today;
+				YearCalendar.SelectionEnd = DateTime.Today;
+			}
+		}
+
+		private void GoalClearBtn_Click(object sender, EventArgs e)
 		{
 			YearCalendar.SelectionStart = DateTime.Today;
 			YearCalendar.SelectionEnd = DateTime.Today;
+
+			GoalSeeChck.Checked = false;
+			GoalSeeChck.Enabled = false;
+			GoalClearBtn.Enabled = false;
 
 			CALENDAR.RemoveExtraHeaderKey(TrackerDrop.SelectedItem.ToString() + "S");
 			CALENDAR.RemoveExtraHeaderKey(TrackerDrop.SelectedItem.ToString() + "E");
 			CALENDAR.Write(Path.Combine(CALENDARSPATH, YearUpD.Value.ToString()), true);
 		}
-
-		private void CalendarContextGoalBtn_DropDownOpening(object sender, EventArgs e)
-		{
-			if (CALENDAR.GetExtraHeaderKeyValue(TrackerDrop.SelectedItem.ToString() + "S") == "")
-			{
-				CalendarContextGoalSeeBtn.Enabled = false;
-				CalendarContextGoalClearBtn.Enabled = false;
-			}
-			else
-			{
-				CalendarContextGoalSeeBtn.Enabled = true;
-				CalendarContextGoalClearBtn.Enabled = true;
-			}
-		}
-
-		private void GoalTrackerPointGiver_FormClosing(object sender, FormClosingEventArgs e)
-		{
-			REG.SetReg("GoalTrackerPointGiver", "calendarDrop", TrackerDrop.SelectedIndex);
-			REG.SetReg("GoalTrackerPointGiver", "yearUpD", YearUpD.Value);
-			REG.SetReg("GoalTrackerPointGiver", "startx", this.Location.X);
-			REG.SetReg("GoalTrackerPointGiver", "starty", this.Location.Y);
-		}
-
+		
 		private void TrackerDrop_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			if (DISABLEREACTIONS)
@@ -299,8 +411,8 @@ namespace GoalTrackerPointGiver
 
 			YearCalendar.RemoveAllBoldedDates();
 			YearCalendar.UpdateBoldedDates();
-			YearCalendar.SelectionStart = DateTime.Today;
-			YearCalendar.SelectionEnd = DateTime.Today;
+			//YearCalendar.SelectionStart = DateTime.Today;
+			//YearCalendar.SelectionEnd = DateTime.Today;
 
 			if (!File.Exists(Path.Combine(CALENDARSPATH, YearUpD.Value.ToString())))
 				return;
@@ -312,6 +424,20 @@ namespace GoalTrackerPointGiver
 					YearCalendar.AddBoldedDate((new DateTime((int)YearUpD.Value, 1, 1)).AddDays(i));
 
 			YearCalendar.UpdateBoldedDates();
+
+			if (CALENDAR.GetExtraHeaderKeyValue(TrackerDrop.SelectedItem.ToString() + "S") == "")
+			{
+				GoalSeeChck.Enabled = false;
+				GoalClearBtn.Enabled = false;
+			}
+			else
+			{
+				GoalSeeChck.Enabled = true;
+				GoalClearBtn.Enabled = true;
+
+				if (GoalSeeChck.Checked)
+					GoalSeeChck_CheckedChanged(sender, new EventArgs());
+			}
 		}
 
 		private void YearUpD_ValueChanged(object sender, EventArgs e)
@@ -320,14 +446,14 @@ namespace GoalTrackerPointGiver
 				return;
 
 			if (!File.Exists(Path.Combine(CALENDARSPATH, YearUpD.Value.ToString())))
-				if (MessageBox.Show("No calendar exists for this year. Would you like to create a calendar for " + YearUpD.Value.ToString() + "?", "", MessageBoxButtons.OKCancel) == DialogResult.Cancel)
+				if (MessageBox.Show("No calendar exists for this year. Would you like to create a calendar for " + YearUpD.Value.ToString() + "?", YearUpD.Value.ToString(), MessageBoxButtons.YesNo) == DialogResult.No)
 				{
 					YearUpD.Value = DateTime.Now.Year;
 					return;
 				}
 				else
 				{
-					DialogResult res = MessageBox.Show("Copy existing trackers to new year " + YearUpD.Value.ToString() + "?", "", MessageBoxButtons.YesNoCancel);
+					DialogResult res = MessageBox.Show("Copy existing trackers to new year " + YearUpD.Value.ToString() + "?", YearUpD.Value.ToString(), MessageBoxButtons.YesNoCancel);
 					if (res == DialogResult.Cancel)
 					{
 						YearUpD.Value = DateTime.Now.Year;
@@ -337,6 +463,7 @@ namespace GoalTrackerPointGiver
 					{
 						int selectedindex;
 						CALENDAR = new FITSBinTable("CALENDAR");
+						CALENDAR.AddExtraHeaderKey("YEAR", YearUpD.Value.ToString(), "the year of the calendar extension");
 
 						if (res == DialogResult.No)
 						{
@@ -372,6 +499,7 @@ namespace GoalTrackerPointGiver
 
 			//else
 			//year calendar exists
+			string currentrack = TrackerDrop.SelectedItem.ToString();
 			CALENDAR = new FITSBinTable(Path.Combine(CALENDARSPATH, YearUpD.Value.ToString()), "CALENDAR");
 			TrackerDrop.Items.Clear();
 			string[] tracks = CALENDAR.TableDataLabelTTYPEs;
@@ -379,7 +507,10 @@ namespace GoalTrackerPointGiver
 				if (CALENDAR.GetTTYPETypeCode(tracks[i]) == TypeCode.Boolean)
 					TrackerDrop.Items.Add(tracks[i]);
 			
-			TrackerDrop.SelectedIndex = 0;
+			if (TrackerDrop.Items.IndexOf(currentrack) == -1)
+				TrackerDrop.SelectedIndex = 0;
+			else
+				TrackerDrop.SelectedIndex = TrackerDrop.Items.IndexOf(currentrack);
 		}
 
 		private void RenameCalendarTextBox_KeyDown(object sender, KeyEventArgs e)
@@ -452,9 +583,13 @@ namespace GoalTrackerPointGiver
 
 		private void EscBtn_Click(object sender, EventArgs e)
 		{
-			this.Close();
+			if (MessageBox.Show("Are you sure you would like to exit?", "Warning", MessageBoxButtons.OKCancel) == DialogResult.OK)
+			{
+				CALENDAR.Write(Path.Combine(CALENDARSPATH, YearUpD.Value.ToString()), true);
+				this.Close();
+			}
 		}
-				
+		
 	}
 }
 
