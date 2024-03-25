@@ -2,6 +2,7 @@
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.FileIO;
 using System;
+using System.Collections;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -22,6 +23,7 @@ namespace GoalTrackerPointGiver
 		readonly private string CALENDARSPATH = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AstroWerks", "GoalTrackerPointGiver", "calendars");
 		bool DISABLEREACTIONS = true;
 		FITSBinTable CALENDAR;
+		int LASTYEAR = -1;
 
 		private void GoalTrackerPointGiver_Load(object sender, EventArgs e)
 		{
@@ -33,6 +35,8 @@ namespace GoalTrackerPointGiver
 			if (cals.Length > 0)
 			{
 				YearUpD.Value = Convert.ToDecimal(REG.GetReg("GoalTrackerPointGiver", "yearUpD"));
+				YearCalendar.MaxDate = new DateTime((int)YearUpD.Value, 12, 31);
+				YearCalendar.MinDate = new DateTime((int)YearUpD.Value, 1, 1);
 				calendarindex = Convert.ToInt32(REG.GetReg("GoalTrackerPointGiver", "calendarDrop"));
 
 				CALENDAR = new FITSBinTable(Path.Combine(CALENDARSPATH, YearUpD.Value.ToString()), "CALENDAR");
@@ -78,6 +82,7 @@ namespace GoalTrackerPointGiver
 
 			DISABLEREACTIONS = false;
 			TrackerDrop.SelectedIndex = calendarindex;
+			LASTYEAR = (int)YearUpD.Value;
 
 			try
 			{
@@ -184,7 +189,11 @@ namespace GoalTrackerPointGiver
 					NotesTxtBox.Text = Encoding.UTF8.GetString(Convert.FromBase64String((CALENDAR.GetTTYPEEntry("NOTES", out _, out _) as string[])[YearCalendar.SelectionRange.Start.DayOfYear - 1]));
 				}
 				else
-					DaysLabel.Text = YearCalendar.SelectionRange.Start.Month + "-" + YearCalendar.SelectionRange.Start.Day + " to " + YearCalendar.SelectionRange.End.Month + "-" + YearCalendar.SelectionRange.End.Day;
+				{
+					int days = YearCalendar.SelectionRange.End.DayOfYear - YearCalendar.SelectionRange.Start.DayOfYear + 1;
+
+					DaysLabel.Text = YearCalendar.SelectionRange.Start.Month + "-" + YearCalendar.SelectionRange.Start.Day + " to " + YearCalendar.SelectionRange.End.Month + "-" + YearCalendar.SelectionRange.End.Day + " (" + days + ")";
+				}
 
 				sbyte[] mood = CALENDAR.GetTTYPEEntry("MOOD", out _, out _) as sbyte[];
 				sbyte[] moodata = new sbyte[ndays];
@@ -267,7 +276,73 @@ namespace GoalTrackerPointGiver
 				CALENDAR.AddTTYPEEntry("NOTES", true, "", notes, FITSBinTable.EntryArrayFormat.IsHeapVariableLengthRows);
 				CALENDAR.Write(Path.Combine(CALENDARSPATH, YearUpD.Value.ToString()), true);
 			}
-		}		
+		}	
+		
+		private void NotesTxtBox_MouseEnter(object sender, EventArgs e)
+		{
+			int ndays = YearCalendar.SelectionEnd.DayOfYear - YearCalendar.SelectionStart.DayOfYear + 1;
+			
+			if (ndays == 1)
+			{
+				NotesTxtBox.Top -= NotesTxtBox.Height;
+				NotesTxtBox.Left -= NotesTxtBox.Width;
+
+				NotesTxtBox.Width *= 2;
+				NotesTxtBox.Height *= 2;
+
+				NotesTxtBox.BringToFront();
+			}
+			else if (ndays > 1)
+			{
+				ArrayList notes = new ArrayList();
+
+				for (int i = 0; i < ndays; i++)
+				{
+					string note = Encoding.UTF8.GetString(Convert.FromBase64String((CALENDAR.GetTTYPEEntry("NOTES", out _, out _) as string[])[YearCalendar.SelectionRange.Start.DayOfYear - 1 + i]));
+					DateTime dt = new DateTime(YearCalendar.SelectionRange.Start.Year, YearCalendar.SelectionRange.Start.Month, YearCalendar.SelectionRange.Start.Day);
+					dt = dt.AddDays(i);
+
+					if (note != "")
+					{
+						notes.Add(dt.ToLongDateString());
+						notes.Add("\n\r");
+						notes.Add("\n\r");
+						notes.Add(note);
+						notes.Add("\n\r");
+						notes.Add("\n\r");
+						notes.Add("\n\r");
+					}
+				}
+
+				string text = "";
+				for (int i = 0; i < notes.Count; i++)
+					text += (string)notes[i];
+
+				NoteDateViewer ndv = new NoteDateViewer();
+				ndv.NotesTextBox.Text = text;
+				ndv.NotesTextBox.SelectionLength = 0;
+				ndv.ShowDialog();
+			}
+		}
+
+		private void NotesTxtBox_MouseLeave(object sender, EventArgs e)
+		{
+			int ndays = YearCalendar.SelectionEnd.DayOfYear - YearCalendar.SelectionStart.DayOfYear + 1;
+
+			if (ndays == 1)
+			{
+				NotesTxtBox.Width /= 2;
+				NotesTxtBox.Height /= 2;
+
+				NotesTxtBox.Top += NotesTxtBox.Height;
+				NotesTxtBox.Left += NotesTxtBox.Width;
+
+			}
+			else if (ndays > 1)
+			{
+
+			}
+		}
 
 		private void MoodContextDrop_SelectedIndexChanged(object sender, EventArgs e)
 		{
@@ -364,8 +439,8 @@ namespace GoalTrackerPointGiver
 
 			if (!GoalSeeChck.Checked)
 			{
-				YearCalendar.SelectionStart = DateTime.Today;
-				YearCalendar.SelectionEnd = DateTime.Today;
+				YearCalendar.SelectionStart = new DateTime((int)YearUpD.Value, DateTime.Today.Month, DateTime.Today.Day);
+				YearCalendar.SelectionEnd = new DateTime((int)YearUpD.Value, DateTime.Today.Month, DateTime.Today.Day);
 				return;
 			}
 
@@ -385,15 +460,18 @@ namespace GoalTrackerPointGiver
 
 			if (GoalSeeChck.Enabled == false)
 			{
-				YearCalendar.SelectionStart = DateTime.Today;
-				YearCalendar.SelectionEnd = DateTime.Today;
+				YearCalendar.SelectionStart = new DateTime((int)YearUpD.Value, DateTime.Today.Month, DateTime.Today.Day);
+				YearCalendar.SelectionEnd = new DateTime((int)YearUpD.Value, DateTime.Today.Month, DateTime.Today.Day);
 			}
 		}
 
 		private void GoalClearBtn_Click(object sender, EventArgs e)
 		{
-			YearCalendar.SelectionStart = DateTime.Today;
-			YearCalendar.SelectionEnd = DateTime.Today;
+			if (MessageBox.Show("Are you sure that you want to clear this goal?", "Clear?", MessageBoxButtons.OKCancel) == DialogResult.Cancel)
+				return;
+
+			YearCalendar.SelectionStart = new DateTime((int)YearUpD.Value, DateTime.Today.Month, DateTime.Today.Day);
+			YearCalendar.SelectionEnd = new DateTime((int)YearUpD.Value, DateTime.Today.Month, DateTime.Today.Day);
 
 			GoalSeeChck.Checked = false;
 			GoalSeeChck.Enabled = false;
@@ -424,6 +502,12 @@ namespace GoalTrackerPointGiver
 					YearCalendar.AddBoldedDate((new DateTime((int)YearUpD.Value, 1, 1)).AddDays(i));
 
 			YearCalendar.UpdateBoldedDates();
+
+			if (YearCalendar.SelectionRange.Start == YearCalendar.SelectionRange.End)
+				if (marked[YearCalendar.SelectionRange.Start.DayOfYear - 1])
+					MarkBtn.Text = "Clear";
+				else
+					MarkBtn.Text = "Mark";
 
 			if (CALENDAR.GetExtraHeaderKeyValue(TrackerDrop.SelectedItem.ToString() + "S") == "")
 			{
@@ -491,6 +575,18 @@ namespace GoalTrackerPointGiver
 							selectedindex = TrackerDrop.SelectedIndex;
 						}
 
+						if (LASTYEAR < (int)YearUpD.Value)
+						{
+							YearCalendar.MaxDate = new DateTime((int)YearUpD.Value, 12, 31);
+							YearCalendar.MinDate = new DateTime((int)YearUpD.Value, 01, 01);
+						}
+						else
+						{
+							YearCalendar.MinDate = new DateTime((int)YearUpD.Value, 01, 01);
+							YearCalendar.MaxDate = new DateTime((int)YearUpD.Value, 12, 31);
+						}
+						LASTYEAR = (int)YearUpD.Value;
+						
 						CALENDAR.Write(Path.Combine(CALENDARSPATH, YearUpD.Value.ToString()), true);
 						TrackerDrop.SelectedIndex = selectedindex;
 						return;
@@ -506,7 +602,19 @@ namespace GoalTrackerPointGiver
 			for (int i = 0; i < tracks.Length; i++)
 				if (CALENDAR.GetTTYPETypeCode(tracks[i]) == TypeCode.Boolean)
 					TrackerDrop.Items.Add(tracks[i]);
-			
+
+			if (LASTYEAR < (int)YearUpD.Value)
+			{
+				YearCalendar.MaxDate = new DateTime((int)YearUpD.Value, 12, 31);
+				YearCalendar.MinDate = new DateTime((int)YearUpD.Value, 01, 01);
+			}
+			else
+			{
+				YearCalendar.MinDate = new DateTime((int)YearUpD.Value, 01, 01);
+				YearCalendar.MaxDate = new DateTime((int)YearUpD.Value, 12, 31);
+			}
+			LASTYEAR = (int)YearUpD.Value;
+
 			if (TrackerDrop.Items.IndexOf(currentrack) == -1)
 				TrackerDrop.SelectedIndex = 0;
 			else
@@ -589,7 +697,6 @@ namespace GoalTrackerPointGiver
 				this.Close();
 			}
 		}
-		
 	}
 }
 

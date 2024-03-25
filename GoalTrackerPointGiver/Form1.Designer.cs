@@ -91,6 +91,7 @@ namespace GoalTrackerPointGiver
 			this.YearCalendar.MaxSelectionCount = 367;
 			this.YearCalendar.MinDate = new System.DateTime(2023, 1, 1, 0, 0, 0, 0);
 			this.YearCalendar.Name = "YearCalendar";
+			this.YearCalendar.ShowTodayCircle = false;
 			this.YearCalendar.TabIndex = 0;
 			this.YearCalendar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.YearCalendar_MouseDown);
 			this.YearCalendar.MouseUp += new System.Windows.Forms.MouseEventHandler(this.YearCalendar_MouseUp);
@@ -174,6 +175,7 @@ namespace GoalTrackerPointGiver
 			// 
 			// renameCalendarTextBox
 			// 
+			this.renameCalendarTextBox.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this.renameCalendarTextBox.MaxLength = 7;
 			this.renameCalendarTextBox.Name = "renameCalendarTextBox";
 			this.renameCalendarTextBox.Size = new System.Drawing.Size(175, 23);
@@ -189,6 +191,7 @@ namespace GoalTrackerPointGiver
 			// 
 			// addCalendarTextBox
 			// 
+			this.addCalendarTextBox.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this.addCalendarTextBox.MaxLength = 7;
 			this.addCalendarTextBox.Name = "addCalendarTextBox";
 			this.addCalendarTextBox.Size = new System.Drawing.Size(175, 23);
@@ -434,6 +437,8 @@ namespace GoalTrackerPointGiver
 			this.NotesTxtBox.Size = new System.Drawing.Size(91, 90);
 			this.NotesTxtBox.TabIndex = 17;
 			this.NotesTxtBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.NotesTxtBox_KeyDown);
+			this.NotesTxtBox.MouseEnter += new System.EventHandler(this.NotesTxtBox_MouseEnter);
+			this.NotesTxtBox.MouseLeave += new System.EventHandler(this.NotesTxtBox_MouseLeave);
 			// 
 			// label2
 			// 
